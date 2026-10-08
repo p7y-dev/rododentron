@@ -2,6 +2,7 @@ import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { stat, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { createMcpHandler } from "./mcp-core.ts";
 
 // Supports both old-style handler.ts (handle(req,res)) and
 // new-style METHOD.ts (default(req: Request): Promise<Response>)
@@ -127,6 +128,9 @@ const SWAGGER_UI = `<!DOCTYPE html>
 
 const TOKEN = process.env.TOKEN;
 
+// MCP (Streamable HTTP) ugyanezen a porton, /mcp alatt; MCP=off kikapcsolja
+const mcpHandler = process.env.MCP === "off" ? null : createMcpHandler();
+
 function authorized(req: IncomingMessage): boolean {
   if (!TOKEN) return true;
   const header = req.headers.authorization;
@@ -181,6 +185,16 @@ createServer(async (req: IncomingMessage, res: ServerResponse) => {
   }
 
   if (!authorized(req)) { res.writeHead(401, { "WWW-Authenticate": "Bearer" }).end("Unauthorized"); return; }
+
+  if (path === "/mcp" && mcpHandler) {
+    try {
+      await writeWebResponse(await mcpHandler(await toWebRequest(req)), res);
+    } catch (err) {
+      console.error("MCP hiba:", err);
+      if (!res.headersSent) res.writeHead(500).end(String(err));
+    }
+    return;
+  }
 
   if (path === "/") path = "/index";
 

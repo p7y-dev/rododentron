@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 
-COPY server.ts mcp.ts ecosystem.config.cjs ./
+COPY server.ts mcp.ts mcp-core.ts ecosystem.config.cjs ./
 
 EXPOSE 3000 3001 6274 6277
 
