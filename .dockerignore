@@ -1,0 +1,4 @@
+node_modules
+routes
+.env
+*.md
