@@ -1,16 +1,13 @@
 #!/bin/bash
-set -e
+# ELAVULT: a kiadás mostantól GitHub Actions-ből megy (.github/workflows/release.yml).
+# A régi csakaszamok/rododentron Docker Hub image-ek változatlanul maradnak.
 
-cd "$(dirname "$0")"
+cat >&2 <<'MSG'
+upload-docker.sh elavult, nem buildel és nem pushol semmit.
 
-VERSION=$(tr -d '[:space:]' < VERSION)
-if [ -z "$VERSION" ]; then
-  echo "VERSION fájl üres" >&2
-  exit 1
-fi
-
-export IMAGE_NAME=csakaszamok/rododentron:$VERSION
-
-docker build -t "$IMAGE_NAME" .
-
-docker push "$IMAGE_NAME"
+Új kiadás:
+  1. VERSION fájl emelése (pl. 0.3.2), commit, push
+  2. git tag v0.3.2 && git push origin v0.3.2
+  3. a GitHub Actions felteszi: ghcr.io/p7y-dev/rododentron:0.3.2
+MSG
+exit 1

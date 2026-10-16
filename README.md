@@ -214,6 +214,18 @@ A `routes/docker/handler.ts` és a `routes/whoami/create/handler.ts` a Docker so
 | 6274        | 6274            | MCP Inspector UI (`INSPECTOR=on`)     |
 | 6277        | 6277            | MCP Inspector proxy (`INSPECTOR=on`)  |
 
+## Kiadás
+
+Az image a `ghcr.io/p7y-dev/rododentron:<verzió>` címen érhető el; GitHub Actions teszi fel ([.github/workflows/release.yml](.github/workflows/release.yml)):
+
+```bash
+echo 0.3.2 > VERSION           # verzió emelése, commit, push
+git tag v0.3.2                 # a tag egyezzen a VERSION fájllal
+git push origin v0.3.2
+```
+
+Már kiadott verzió nem írható felül. A korábbi `csakaszamok/rododentron` Docker Hub image-ek változatlanul elérhetők; az `upload-docker.sh` elavult.
+
 ## Struktúra
 
 ```
@@ -226,6 +238,7 @@ mcp-core.ts          ← route-ok → MCP toolok (createMcpHandler, listMcpTools
 mcp.ts               ← önálló MCP szerver: /mcp + régi /sse (3001)
 ecosystem.config.cjs ← pm2 konfig (Docker-ben fut)
 examples/mcp-demo/   ← példa route-ok + MCP elfogadási teszt
+.github/workflows/release.yml ← v* tagre: ghcr.io/p7y-dev/rododentron:<verzió>
 Dockerfile
 docker-compose.yml
 ```

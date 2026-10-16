@@ -48,7 +48,7 @@ docker run -d \
   -p 8081:3000 \
   -p 8082:3001 \
   -v "$(pwd)/routes:/app/routes" \
-  csakaszamok/rododentron:0.3.1
+  ghcr.io/p7y-dev/rododentron:0.3.1
 ```
 
 If your handlers need access to the Docker socket:
@@ -107,7 +107,7 @@ docker run -d \
   -p 8081:3000 \
   -p 8082:3001 \
   -v "$(pwd)/routes:/app/routes" \
-  csakaszamok/rododentron:0.3.1
+  ghcr.io/p7y-dev/rododentron:0.3.1
 ```
 
 Every request requires: `-H "Authorization: Bearer mysecrettoken"` or `?token=mysecrettoken`.

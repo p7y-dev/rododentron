@@ -6,7 +6,7 @@ Példa route-ok az MCP tool-generáláshoz és egy elfogadási teszt (SDK kliens
 docker run -d --name rodo-mcp-test -e TOKEN=abc123 \
   -v "$(pwd)/routes:/app/routes" \
   -v "$(pwd)/test.ts:/app/test.ts" \
-  csakaszamok/rododentron:0.3.1
+  ghcr.io/p7y-dev/rododentron:0.3.1
 
 docker exec -w /app rodo-mcp-test node_modules/.bin/tsx test.ts
 docker rm -f rodo-mcp-test
