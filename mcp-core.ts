@@ -256,7 +256,7 @@ function buildRequest(entry: ToolEntry, args: Record<string, unknown>, incoming:
   let path = entry.route.path;
   for (const name of entry.pathParams) {
     const value = args[name];
-    if (value === undefined || value === null || value === "") throw new Error(`Hiányzó útvonal-paraméter: ${name}`);
+    if (value === undefined || value === null || value === "") throw new Error(`Missing path parameter: ${name}`);
     path = path.replace(`{${name}}`, encodeURIComponent(String(value)));
   }
 
@@ -342,9 +342,9 @@ async function toToolResult(res: Response, o: ResolvedOptions) {
 
   let text: string;
   if (!isText) {
-    text = `[nem szöveges válasz: ${contentType}, ${buf.length} bájt]`;
+    text = `[non-text response: ${contentType}, ${buf.length} bytes]`;
   } else if (buf.length > o.maxResponseBytes) {
-    text = buf.subarray(0, o.maxResponseBytes).toString("utf-8") + `\n…[levágva: ${o.maxResponseBytes} / ${buf.length} bájt]`;
+    text = buf.subarray(0, o.maxResponseBytes).toString("utf-8") + `\n…[truncated: ${o.maxResponseBytes} of ${buf.length} bytes]`;
   } else {
     text = buf.toString("utf-8");
   }
@@ -356,14 +356,14 @@ async function toToolResult(res: Response, o: ResolvedOptions) {
 async function callTool(o: ResolvedOptions, name: string, args: Record<string, unknown>, incoming: Headers) {
   try {
     const entry = (await buildTools(o)).find(e => e.tool.name === name);
-    if (!entry) return { content: [{ type: "text", text: `Ismeretlen tool: ${name}` }], isError: true };
+    if (!entry) return { content: [{ type: "text", text: `Unknown tool: ${name}` }], isError: true };
 
     const req = buildRequest(entry, args, incoming, o);
     const mod = await loadModule(entry.file);
     let res: Response;
     if ("default" in mod && typeof mod.default === "function") res = await mod.default(req);
     else if ("handle" in mod && typeof mod.handle === "function") res = await invokeLegacy(mod, req);
-    else throw new Error(`Érvénytelen handler modul: ${entry.file}`);
+    else throw new Error(`Invalid handler module: ${entry.file}`);
 
     return await toToolResult(res, o);
   } catch (err) {
